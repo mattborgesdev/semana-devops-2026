@@ -20,7 +20,7 @@ FROM node:20-alpine AS production
 # Labels OCI padrão (boas práticas de container)
 LABEL org.opencontainers.image.title="DevOps Map Brasil"
 LABEL org.opencontainers.image.description="App interativa da Semana DevOps - LINUXtips"
-LABEL org.opencontainers.image.authors="Jeferson Fernando <jeferson@linuxtips.io>"
+LABEL org.opencontainers.image.authors="Matheus Borges <mattborgesdev@gmail.com>"
 LABEL org.opencontainers.image.source="https://github.com/badtuxx/semana-devops"
 
 # Criar usuário não-root (SEGURANÇA — nunca rode como root!)
