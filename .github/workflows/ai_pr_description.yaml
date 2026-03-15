@@ -33,7 +33,10 @@ jobs:
       - name: Install Ollama
         run: curl -fsSL https://ollama.ai/install.sh | sh
 
-      - name: Pull lightweight model
+      - name: Start Ollama
+        run: ollama serve & sleep 5
+
+      - name: Pull phi3 model
         run: ollama pull phi
 
       - name: Generate PR description
