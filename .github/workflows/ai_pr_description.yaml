@@ -35,19 +35,21 @@ jobs:
       - name: Generate PR description
         run: |
           cat > prompt.txt << 'EOF'
-          Write a simple GitHub PR description with 2 sections:
+          Write a GitHub PR description with exactly this format:
 
           ## Overview
           [1-2 sentences summarizing what this PR does]
 
           ## Description
-          [brief description of the changes]
+          - [change 1 - keep it short]
+          - [change 2 - keep it short]
+          - [change 3 - keep it short]
 
           Context:
           EOF
           cat context.txt >> prompt.txt
           echo "" >> prompt.txt
-          echo "Keep it simple and concise." >> prompt.txt
+          echo "Keep it simple and concise. Use bullet points format in Description section." >> prompt.txt
           ollama run phi3:mini < prompt.txt > pr_body.md
 
       - name: Update PR
