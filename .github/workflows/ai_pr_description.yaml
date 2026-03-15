@@ -1,0 +1,56 @@
+name: AI PR Description
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  ai-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect PR context
+        run: |
+          git fetch origin ${{ github.base_ref }}
+
+          echo "## PR Title" > context.txt
+          echo "${{ github.event.pull_request.title }}" >> context.txt
+          echo "" >> context.txt
+
+          echo "## Changed Files" >> context.txt
+          git diff --name-only origin/${{ github.base_ref }} >> context.txt
+          echo "" >> context.txt
+
+          echo "## Commits" >> context.txt
+          git log origin/${{ github.base_ref }}..HEAD --oneline >> context.txt
+          echo "" >> context.txt
+
+          echo "## Diff summary" >> context.txt
+          git diff --stat origin/${{ github.base_ref }} >> context.txt
+
+      - name: Install Ollama
+        run: curl -fsSL https://ollama.ai/install.sh | sh
+
+      - name: Pull lightweight model
+        run: ollama pull phi
+
+      - name: Generate PR description
+        run: |
+          PROMPT="Write a GitHub pull request description using this template:
+
+          ## Description
+          ## Changes
+          ## How to test
+          ## Risks
+
+          Context:
+          $(cat context.txt)"
+
+          ollama run phi "$PROMPT" > pr_body.md
+
+      - name: Update PR
+        run: gh pr edit ${{ github.event.pull_request.number }} --body-file pr_body.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
