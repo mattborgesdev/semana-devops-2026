@@ -15,19 +15,12 @@ jobs:
         run: |
           git fetch origin ${{ github.base_ref }}
 
-          echo "## PR Title" > context.txt
-          echo "${{ github.event.pull_request.title }}" >> context.txt
+          echo "TITLE: ${{ github.event.pull_request.title }}" > context.txt
           echo "" >> context.txt
-
-          echo "## Changed Files" >> context.txt
+          echo "FILES:" >> context.txt
           git diff --name-only origin/${{ github.base_ref }} >> context.txt
           echo "" >> context.txt
-
-          echo "## Commits" >> context.txt
-          git log origin/${{ github.base_ref }}..HEAD --oneline >> context.txt
-          echo "" >> context.txt
-
-          echo "## Diff summary" >> context.txt
+          echo "DIFF:" >> context.txt
           git diff --stat origin/${{ github.base_ref }} >> context.txt
 
       - name: Install Ollama
@@ -41,17 +34,10 @@ jobs:
 
       - name: Generate PR description
         run: |
-          PROMPT="Write a GitHub pull request description using this template:
-
-          ## Description
-          ## Changes
-          ## How to test
-          ## Risks
-
-          Context:
-          $(cat context.txt)"
-
-          ollama run phi "$PROMPT" > pr_body.md
+          echo 'Write a simple GitHub PR description with 2 sections only:\n\n## Overview\n[1-2 sentences summarizing what this PR does]\n\n## Description\n[brief description of the changes]\n\nUse this context:\n' > prompt.txt
+          cat context.txt >> prompt.txt
+          echo '\n\nKeep it simple and concise. Do not add extra sections.' >> prompt.txt
+          ollama run phi < prompt.txt > pr_body.md
 
       - name: Update PR
         run: gh pr edit ${{ github.event.pull_request.number }} --body-file pr_body.md
