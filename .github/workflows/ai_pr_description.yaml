@@ -29,15 +29,26 @@ jobs:
       - name: Start Ollama
         run: ollama serve & sleep 5
 
-      - name: Pull phi3 model
-        run: ollama pull phi
+      - name: Pull phi3 mini model
+        run: ollama pull phi3:mini
 
       - name: Generate PR description
         run: |
-          echo 'Write a simple GitHub PR description with 2 sections only:\n\n## Overview\n[1-2 sentences summarizing what this PR does]\n\n## Description\n[brief description of the changes]\n\nUse this context:\n' > prompt.txt
+          cat > prompt.txt << 'EOF'
+          Write a simple GitHub PR description with 2 sections:
+
+          ## Overview
+          [1-2 sentences summarizing what this PR does]
+
+          ## Description
+          [brief description of the changes]
+
+          Context:
+          EOF
           cat context.txt >> prompt.txt
-          echo '\n\nKeep it simple and concise. Do not add extra sections.' >> prompt.txt
-          ollama run phi < prompt.txt > pr_body.md
+          echo "" >> prompt.txt
+          echo "Keep it simple and concise." >> prompt.txt
+          ollama run phi3:mini < prompt.txt > pr_body.md
 
       - name: Update PR
         run: gh pr edit ${{ github.event.pull_request.number }} --body-file pr_body.md
