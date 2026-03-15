@@ -21,7 +21,7 @@ FROM node:20-alpine AS production
 LABEL org.opencontainers.image.title="DevOps Map Brasil"
 LABEL org.opencontainers.image.description="App interativa da Semana DevOps - LINUXtips"
 LABEL org.opencontainers.image.authors="Matheus Borges <mattborgesdev@gmail.com>"
-LABEL org.opencontainers.image.source="https://github.com/badtuxx/semana-devops"
+LABEL org.opencontainers.image.source="https://github.com/mattborgesdev/semana-devops-2026"
 
 # Criar usuário não-root (SEGURANÇA — nunca rode como root!)
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
